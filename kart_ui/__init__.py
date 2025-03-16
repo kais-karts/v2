@@ -1,7 +1,4 @@
 from p5 import *
-from localization import current_location
-from speed_ctrl import set_speed_multiplier
-from comms import PacketQueue
 
 
 # Intellisense can't find these on its own for some reason
