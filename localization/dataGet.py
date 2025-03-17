@@ -1,6 +1,7 @@
 import time
 import board
 import busio
+import serial
 import adafruit_bno055
 import adafruit_gps
 
@@ -9,8 +10,8 @@ i2c = busio.I2C(board.SCL, board.SDA)
 bno055 = adafruit_bno055.BNO055_I2C(i2c)
 
 # Setup UART for GPS
-uart = busio.UART(board.TX, board.RX, baudrate=9600, timeout=10)
-gps = adafruit_gps.GPS(uart, debug=False)
+ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=10)
+gps = adafruit_gps.GPS(ser, debug=False)
 
 # Turn on the basic GGA and RMC info (what you typically want)
 gps.send_command(b"PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
@@ -31,7 +32,7 @@ gps.send_command(b"PMTK220,1000")
 # You can also speed up the rate, but don't go too fast or else you can lose
 # data during parsing.  This would be twice a second (2hz, 500ms delay):
 # gps.send_command(b'PMTK220,500')
-
+last_print = time.monotonic()
 while True:
     # Make sure to call gps.update() every loop iteration and at least twice
     # as fast as data comes from the GPS unit (usually every second).
@@ -45,6 +46,7 @@ while True:
         if not gps.has_fix:
             # Try again if we don't have a fix yet.
             print("Waiting for fix...")
+            print(f"Number Satellites: {gps.satellites}")
             continue
         # We have a fix! (gps.has_fix is true)
         # Print out details about the fix like location, date, etc.
