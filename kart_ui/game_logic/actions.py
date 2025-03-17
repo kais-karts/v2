@@ -2,8 +2,9 @@
 
 from localization import current_location
 from speed_ctrl import set_speed_multiplier
-from internal_map import get_location_index
+from kart_ui.game_logic.internal_map import get_location_index
 from constants import ITEMS, BASE_MULTIPLIER
+from comms import Packet
 
 import threading
 import time
@@ -12,17 +13,17 @@ positions = {} # Dict of kart_id: index/position
 ranking = [] # List of kart_id in order of position (index 0 is first place)
 affect_lock = threading.Lock()
 
-def update_ranking(data):
+def update_ranking(kart_id: int, position):
     """Update the rankings based on the location data
 
     Args:
-        data (str): The location data
+        data (Packet): The location data
     """
 
-    print(f"Updating ranking with location data: {data}")
+    print(f"Updating ranking with location data: {kart_id=} {position=}")
 
-    kart_to_update = data.kart_id
-    kart_location = data.position
+    kart_to_update = kart_id
+    kart_location = position
     prev_rank = ranking.index(kart_to_update) 
 
     # update kart position
