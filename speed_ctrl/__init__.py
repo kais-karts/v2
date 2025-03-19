@@ -1,8 +1,6 @@
 import RPi.GPIO as GPIO
 import time
 
-# this is ran upon import to force the initialization of the IC
-init_speed_control()
 
 # CONSTANTS
 
@@ -31,6 +29,7 @@ def set_speed_multiplier(val: float) -> float:
     val = round(val, 2)
     reset_speed_control()
     incs = int(val*100)
+    print("incs, ", incs)
     for i in range(incs):
         increment()
     
@@ -48,7 +47,7 @@ def init_speed_control():
     Initializes speed control ic
     """
     global INITIALIZED
-    GPIO.setwarnings(False)
+    GPIO.setwarnings(True)
     GPIO.setmode(GPIO.BCM)
 
     GPIO.setup(CS_PIN, GPIO.OUT)
@@ -58,7 +57,7 @@ def init_speed_control():
     GPIO.output(INC_PIN, GPIO.HIGH)
     GPIO.output(CS_PIN, GPIO.LOW)
     GPIO.output(UD_PIN, GPIO.LOW) # default decrement ig
-    INITIALIZED = False
+    INITIALIZED = True
 
 # util functions
 def increment():
@@ -86,4 +85,21 @@ def edgeTrigger():
     GPIO.output(INC_PIN, GPIO.LOW)
     time.sleep(.001)
 
+# this is ran upon import to force the initialization of the IC
+init_speed_control()
 
+if __name__ == "__main__":
+    # can run module directly for testing purposes
+    # currently this is useful for determining how many actual taps are in the IC lmao (amazon purchase was a scam)
+    init_speed_control()
+    reset_speed_control()
+    val = 0
+    while True:
+        # val = (val + .1) % 1
+        # val = .05
+        # print(f"attempted to set speed multiplier to {val} got {set_speed_multiplier(val)} instead")
+        #
+        increment()
+        print(f"increment {val}")
+        val += 1
+        time.sleep(2)
