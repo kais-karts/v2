@@ -2,10 +2,20 @@
 ## Description
 This is the hardware (+ minimal software) to variably divide the voltage going from the Go-Kart's pedal to the motor speed controller.
 
-## Pins
-I will claim GPIO pins here
+## Setup
+### Hardware
+Connect:
+GPIO 17 -> CS
+GPIO 27 -> INC
+GPIO 22 -> UD
+
+### Software
+Just import the module and call set_speed_multiplier() whenever you wish to change the multiplier.
 
 ## Development Notes
+3/19/2025
+Proof of concept works
+
 3/16/2025
 Im thinking Vh/Rh, VCC  connect to 5v. Vl/Rl, VSS connected to GND. Also all other pins defined in constants for now but just GPIOs.
 
