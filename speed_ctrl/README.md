@@ -14,7 +14,11 @@ Just import the module and call set_speed_multiplier() whenever you wish to chan
 
 ## Development Notes
 3/19/2025
-Proof of concept works
+Proof of concept works, whats left to do:
+- make it work without needing to reset every call (reset should just be last resort when software not in sync with hardware)
+- make number of taps a parameter (dont hard code 100)
+- make the proof of concept circuit have buffered input and output with TL082 (input from external power supply, output is wiper to be probed)
+- label lines on proof of concept
 
 3/16/2025
 Im thinking Vh/Rh, VCC  connect to 5v. Vl/Rl, VSS connected to GND. Also all other pins defined in constants for now but just GPIOs.
