@@ -7,7 +7,7 @@ This is the hardware (+ minimal software) to variably divide the voltage going f
 Connect:
 GPIO 17 -> CS\
 GPIO 27 -> INC\
-GPIO 22 -> UD\
+GPIO 22 -> UD
 
 ### Software
 Just import the module and call set_speed_multiplier() whenever you wish to change the multiplier. **Note multiplier will start at 0 upon initialization as of now**
