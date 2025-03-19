@@ -85,8 +85,9 @@ def edgeTrigger():
     GPIO.output(INC_PIN, GPIO.LOW)
     time.sleep(.001)
 
-# this is ran upon import to force the initialization of the IC
+# this is ran upon import to force the initialization of the IC and start at a known state (multiplier is 0)
 init_speed_control()
+reset_speed_control()
 
 if __name__ == "__main__":
     # can run module directly for testing purposes
