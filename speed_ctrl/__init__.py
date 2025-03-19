@@ -12,8 +12,11 @@ UD_PIN  = 22
 # other
 INITIALIZED = False
 
-# external functions
-def set_speed_multiplier(val: float) -> float:
+"""
+Call to set the speed multiplier on the kart. TODO: make it work without reset 
+( just have history of previous value ) ( this will avoid jitter when driving )
+"""
+def set_speed_multiplier(val: float, reset: bool = False) -> float:
     """
     Set the speed multiplier, e.g. how much of the pedal is applied to the actual motor speed controller.
     Returns the attempted multiplier
@@ -27,7 +30,8 @@ def set_speed_multiplier(val: float) -> float:
         raise Exception("speed control IC not initialized")
 
     val = round(val, 2)
-    reset_speed_control()
+    if reset:
+        reset_speed_control()
     incs = int(val*100)
     print("incs, ", incs)
     for i in range(incs):
