@@ -55,7 +55,6 @@ def update():
             case Packet.PING: pass
             case Packet.LOCATION: race.update_ranking(packet)
             case Packet.ATTACK: race.apply_item(packet)
-            # etc...
     
     # Update my location and broadcast to everyone else
     location_packet = Packet(Packet.LOCATION, kart_id=KART_ID, location=current_location())
