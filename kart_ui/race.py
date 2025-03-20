@@ -4,12 +4,27 @@ from constants import KART_ID
 
 class Race():
     """
-    Complete state of a race
+    Complete state of a race.
+
+    Attributes:
+        go_karts (dict[int, GoKart]): Mapping of go-kart IDs to their respective GoKart objects
+        rankings (list[int]): List of go-kart IDs in order of their current ranking
+        me (GoKart): The GoKart object representing the go-kart running this code
     """
-    def __init__(self, num_go_karts: int):
+    def __init__(self, num_go_karts: int = 0):
         self._go_karts = { i: GoKart(i) for i in range(num_go_karts) }
         self._rankings = list(range(num_go_karts))
         self._me = self._go_karts[KART_ID]
+
+    def _add_go_kart(self, go_kart: GoKart):
+        """
+        Add a go-kart to the race
+
+        Args:
+            go_kart (GoKart): Go-Kart to add
+        """
+        self._go_karts[go_kart.id] = go_kart
+        self._rankings.append(go_kart.id) # Not necessarily last place, but assumes rankings will be sorted
 
     def update_ranking(self, packet: Packet):
         """
@@ -20,33 +35,28 @@ class Race():
         """
         assert packet.tag == Packet.LOCATION
 
-        # TODO(bruke): the logic u had before. I've pasted it below
-        # print(f"Updating ranking with location data: {kart_id=} {position=}")
+        kart_id, kart_position = packet.kart_id, packet.location
 
-        # kart_to_update = kart_id
-        # kart_location = position
-        # prev_rank = ranking.index(kart_to_update) 
-
-        # # update kart position
-        # kart_index = get_location_index(kart_location)
-        # positions[kart_to_update] = kart_index
-
-        # # update ranking
-        # ranking.remove(kart_to_update)
-        # for i in range(len(ranking)):
-        #     if kart_index > ranking[i]:
-        #         ranking.insert(i, kart_to_update)
-        #         break
+        # Adds the go-kart to the race if it has not been seen before
+        if kart_id not in self._go_karts:
+            self._add_go_kart(GoKart(kart_id))
         
-        # # for debugging
-        # new_rank = ranking.index(kart_to_update)
-        # if new_rank < prev_rank:
-        #     print(f"Kart {kart_to_update} moved up in the rankings!")
-        # elif new_rank > prev_rank:
-        #     print(f"Kart {kart_to_update} moved down in the rankings!")
-        # else:
-        #     print(f"Kart {kart_to_update} did not move in the rankings.")
+        # Update kart position
+        kart = self._go_karts[kart_id]
+        kart.position = kart_position
+        
+        self._rankings.remove(kart_id)
+        new_rank = len(self._rankings)  # Default to last position
 
+        # Check where the kart should be ranked
+        for ix, other_kart_id in enumerate(self._rankings):
+            if kart > self._go_karts[other_kart_id]:
+                new_rank = ix
+                break
+
+        # Insert kart at new position
+        self._rankings.insert(new_rank, kart_id)
+            
     def apply_item(self, packet: Packet):
         """
         Apply an item to a Go-Kart in this race
