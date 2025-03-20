@@ -32,7 +32,7 @@ def update_ranking(data):
     # update ranking
     ranking.remove(kart_to_update)
     for i in range(len(ranking)):
-        if kart_index > ranking[i]:
+        if kart_index >= positions[ranking[i]]:
             ranking.insert(i, kart_to_update)
             break
     
@@ -45,12 +45,21 @@ def update_ranking(data):
     else:
         print(f"Kart {kart_to_update} did not move in the rankings.")
 
+def use_item(item: int):
+    """
+    Use an item
+
+    Args:
+        item (int): The item to use (index of the item in the ITEMS dict)
+    """
+
 def apply_item(item: int):
     """Apply an item to the kart
 
     Args:
         item (int): The item to apply (index of the item in the ITEMS dict)
     """
+    #TODO: Think about edge cases (e.g. player hit with or using an item while already affected) 
     if item < 0 or item >= len(ITEMS):
         print("Invalid item index.")
         return
@@ -61,7 +70,7 @@ def apply_item(item: int):
 def apply_effect(item: int):
     """Apply the item after a delay"""
     if affect_lock.acquire(blocking=False):
-        item_data = ITEMS[ITEMS.keys()[item]]
+        item_data = ITEMS[list(ITEMS.keys())[item]]
         print("<Item Applied>")
         set_speed_multiplier(item_data[0])
         time.sleep(item_data[1])

@@ -9,6 +9,7 @@ def start():
     """
     Start the UI. This function takes over the main thread (never returns)!
     """
+    gpio.init()
     run(renderer="skia", sketch_draw=draw, sketch_setup=setup)
 
 
