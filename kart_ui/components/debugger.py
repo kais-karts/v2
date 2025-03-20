@@ -21,21 +21,32 @@ class Debugger:
             
             # Horizontal center line  
             line(0, height/2, width, height/2)
+            
+            fill(255, 0, 0)
+            circle(self.map.origin_x, self.map.origin_y, 50)
     
     def mouse_pressed(self, mouse_x, mouse_y):
-        if self.on and self.shuffler is not None:
+        if self.on:
+            self.show_luigi_at(mouse_x, mouse_y)    
+        if self.shuffler is not None:
             if mouse_x < width/2:
                 item = SHUFFLED_ITEMS[int(random_uniform(0, len(SHUFFLED_ITEMS)))]
                 # item = 'banana'
                 self.shuffler.shuffle(item)
             else:
                 self.shuffler.use_item()
-    def show_image_outline(self, x, y, width, height):
+    def show_image_outline(self, x, y, width, height, loc='center'):
         if self.on:
             stroke(255, 0, 0)  # Red border
             stroke_weight(2)  # Border thickness
             no_fill()
-            rect(x-width/2, y-height/2, width, height)
+            if loc == 'center':
+                rect(x-width/2, y-height/2, width, height)
+            elif loc == 'top_left':
+                rect(x, y, width, height)
+            elif loc == 'top_right':
+                rect(x-width, y, width, height)
+                
 
     def set_shuffler(self, shuffler):
         self.shuffler = shuffler
@@ -43,8 +54,11 @@ class Debugger:
     def set_map(self, map):
         self.map = map
     
-    def show_character_at(self, mouse_x, mouse_y):
-        rel_x, rel_y = float((mouse_x-self.map.map_x)), float((mouse_y-self.map.map_y))
-        print(f"({int(rel_x)}, {int(rel_y)})")
-        self.map.update({0: (rel_x, rel_y)})
+    def show_luigi_at(self, mouse_x, mouse_y):
+        map_x = (mouse_x - self.map.origin_x) / self.map.scale_size
+        map_y = (mouse_y - self.map.origin_y) / self.map.scale_size
+        new_positions = self.map.kart_positions.copy()
+        new_positions[4] = (map_x, map_y)
+        print(map_x, map_y)
+        self.map.update(new_positions)
         

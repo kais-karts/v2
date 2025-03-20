@@ -96,9 +96,8 @@ def draw():
     mini_map.draw()
 
 def mouse_pressed():
-    # debugger.mouse_pressed(mouse_x, mouse_y)
+    debugger.mouse_pressed(mouse_x, mouse_y)
     # print(f"({int(mouse_x)}, {int(mouse_y)})")
-    debugger.show_character_at(mouse_x, mouse_y)
 if __name__ == "__main__":
     start()
 
