@@ -23,3 +23,9 @@
 - FOE for some items
 
 
+# Local Kart
+- needs to pickup item
+- use item
+- change speed
+- store item
+- 

@@ -11,11 +11,11 @@ class Race():
         rankings (list[int]): List of go-kart IDs in order of their current ranking
         me (GoKart): The GoKart object representing the go-kart running this code
     """
-    def __init__(self, game_map: Map, num_go_karts: int = 0):
+    def __init__(self, game_map: Map):
+        self._me = GoKart(KART_ID, game_map)
         self._game_map = game_map
-        self._go_karts = { i: GoKart(i) for i in range(num_go_karts) }
-        self._rankings = list(range(num_go_karts))
-        self._me = self._go_karts[KART_ID]
+        self._go_karts = {KART_ID: self._me}
+        self._rankings = [KART_ID]
 
     def _add_go_kart(self, go_kart: GoKart):
         """
@@ -44,7 +44,7 @@ class Race():
         
         # Update kart position
         kart = self._go_karts[kart_id]
-        kart.position = kart_position
+        kart.update_position(kart_position)
         
         self._rankings.remove(kart_id)
         new_rank = len(self._rankings)  # Default to last position
@@ -67,13 +67,17 @@ class Race():
         """
         assert packet.tag == Packet.ATTACK
 
-        # TODO(bruke): the logic u had before. I've pasted it below
-        # if item < 0 or item >= len(ITEMS):
-        #     print("Invalid item index.")
-        #     return
-        # t = threading.Thread(target=apply_effect, args=(item))
-        # t.start()
-        # print(f"Applying item: {ITEMS[ITEMS.keys()[item]]}")
+        victim_id, item_id = packet.data
+
+        if victim_id == KART_ID:
+            self._me.apply_item(item_id)
+
+    def local_pickup_item(self):
+        """
+        Picks up an item locally if item checkpoint is reached 
+        """
+        place = self._rankings.index(KART_ID) + 1
+        self._me.pickup_item(place)
 
     def __iter__(self):
         """
