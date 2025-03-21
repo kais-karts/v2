@@ -62,11 +62,11 @@ def update():
     race.update_ranking(location_packet)
     packet_queue.send(location_packet)
 
+    # Pickup item if I am near checkpoint
+    race.local_pickup_item()
+
     # Update the speed control for this go kart
     set_speed_multiplier(race.owned_kart.speed_multiplier)
-
-    # TODO: query button state here, apply abilities etc...
-
 
 def start():
     """
