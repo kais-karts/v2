@@ -1,4 +1,5 @@
 from constants import KART_ID
+from kart_ui.map import Map
 
 
 class GoKart():
@@ -11,8 +12,9 @@ class GoKart():
         laps (int): Number of laps completed by this kart.
         speed_multiplier (float): Multiplier for the kart's speed (default 1.0).
     """
-    def __init__(self, id: int):
+    def __init__(self, id: int, game_map: Map):
         self._id = id
+        self._game_map = game_map
         self._position = None
         self._laps = 0
         self.speed_multiplier = 1.0

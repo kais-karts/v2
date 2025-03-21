@@ -1,4 +1,4 @@
-from kart_ui import GoKart
+from kart_ui import GoKart, Map
 from comms import Packet
 from constants import KART_ID
 
@@ -11,7 +11,8 @@ class Race():
         rankings (list[int]): List of go-kart IDs in order of their current ranking
         me (GoKart): The GoKart object representing the go-kart running this code
     """
-    def __init__(self, num_go_karts: int = 0):
+    def __init__(self, game_map: Map, num_go_karts: int = 0):
+        self._game_map = game_map
         self._go_karts = { i: GoKart(i) for i in range(num_go_karts) }
         self._rankings = list(range(num_go_karts))
         self._me = self._go_karts[KART_ID]
@@ -39,7 +40,7 @@ class Race():
 
         # Adds the go-kart to the race if it has not been seen before
         if kart_id not in self._go_karts:
-            self._add_go_kart(GoKart(kart_id))
+            self._add_go_kart(GoKart(kart_id, self._game_map))
         
         # Update kart position
         kart = self._go_karts[kart_id]
