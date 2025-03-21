@@ -10,9 +10,9 @@
 - [X] Implement efficient ranking update
 
 ## Item
-- Implement item pickup 
+- [X] Implement item pickup 
 - Implement item use
-- Implement item hit
+- [X] Implement item hit
 - Figure out overlap between items and such
 
 ## Testing
@@ -21,11 +21,3 @@
 ## Stretch
 - Denote winner somehow
 - FOE for some items
-
-
-# Local Kart
-- needs to pickup item
-- use item
-- change speed
-- store item
-- 
