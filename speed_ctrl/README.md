@@ -5,14 +5,16 @@ This is the hardware (+ minimal software) to variably divide the voltage going f
 ## Setup
 ### Hardware
 Connect:
-GPIO 17 -> CS\
 GPIO 27 -> INC\
 GPIO 22 -> UD
 
 ### Software
-Just import the module and call set_speed_multiplier() whenever you wish to change the multiplier. **Note multiplier will start at 0 upon initialization as of now**
+Just import the module and call set_speed_multiplier() whenever you wish to change the multiplier. **Note multiplier will start at 0 upon initialization as of now, thus car will not move until you change the multiplier**. See set_speed_multiplier() docstring for a description of the functions inputs and outputs.
 
 ## Development Notes
+3/29/2025 \
+Completed all the TODOs, all thats left is to test and order PCBs
+
 3/19/2025 \
 Proof of concept works, whats left to do:
 - make it work without needing to reset every call (reset should just be last resort when software not in sync with hardware)
