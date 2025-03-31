@@ -12,6 +12,7 @@ class GoKart():
 
     Attributes:
         id (int): Unique identifier for this kart.
+        game_map (Map): The Map object representing the map that this kart is currently on.
         position (tuple[float, float] | None): 2D location on the track, or `None` if not yet known.
         laps (int): Number of laps completed by this kart.
         speed_multiplier (float): Multiplier for the kart's speed (default BASE_MULTIPLIER).
@@ -116,7 +117,7 @@ class GoKart():
             print("No item to use.")
             return
         
-        item = self._item_id
+        item = ITEMS[self._item_id]
 
         if item.effect == ItemEffect.BUFF and item.target == ItemTarget.SELF:
             if self.apply_item(self._item_id):

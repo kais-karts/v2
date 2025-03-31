@@ -137,7 +137,7 @@ def update():
         attack_packets = create_attack_packet(race.owned_kart.pending_attack)
         for attack_packet in attack_packets:
             packet_queue.send(attack_packet)
-            print(f"Sent {ITEMS[attack_packet.data[1]]} to kart {attack_packet.data[0]}")
+            print(f"Sent {ITEMS[attack_packet.data[1]].name} to kart {attack_packet.data[0]}")
         race.owned_kart.pending_attack = None
 
     # Update the speed control for this go kart

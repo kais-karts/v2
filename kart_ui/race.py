@@ -7,9 +7,10 @@ class Race():
     Complete state of a race.
 
     Attributes:
+        me (GoKart): The GoKart object representing the go-kart running this code
+        game_map (Map): The Map object that this race is played on.
         go_karts (dict[int, GoKart]): Mapping of go-kart IDs to their respective GoKart objects
         rankings (list[int]): List of go-kart IDs in order of their current ranking
-        me (GoKart): The GoKart object representing the go-kart running this code
     """
     def __init__(self, game_map: Map):
         self._me = GoKart(KART_ID, game_map)
