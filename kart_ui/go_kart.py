@@ -161,8 +161,3 @@ class GoKart():
                 self._effect_ends_at = None
                 self._ongoing_effect = False
                 print("Speed effect ended, reset to base.")
-
-    def update_local_state(self):
-        self.update_item_effect()
-        self.check_button_pressed()
-        # check for button pressed

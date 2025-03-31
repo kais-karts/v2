@@ -1,18 +1,23 @@
 from p5 import *
+import RPi.GPIO as GPIO
 
 from kart_ui.go_kart import GoKart
 from kart_ui.race import Race
 from comms import PacketQueue, Packet
-from constants import PORT, KART_ID, NUM_GO_KARTS
+from constants import PORT, KART_ID, NUM_GO_KARTS, BUTTON_IN, BUTTON_OUT
 from items import ITEMS, ItemTarget
 from localization import current_location
 from speed_ctrl import set_speed_multiplier
 
 # Intellisense can't find these on its own for some reason
-global mouse_is_pressed, mouse_x, mouse_y
+global mouse_is_pressed, mouse_x, mouse_y, key_is_pressed, key
 
 packet_queue = PacketQueue(PORT)
 race = Race(NUM_GO_KARTS)
+
+# Global variables to track button state
+button_pressed = False
+last_button_state = None
 
 def setup():
     """
@@ -21,6 +26,26 @@ def setup():
     size(800, 600)
     background(200)
 
+    setup_button()
+
+def setup_button():
+    """
+    Sets up button input for Raspberry Pi GPIO.
+    """
+    try:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(BUTTON_IN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(BUTTON_OUT, GPIO.OUT)
+        GPIO.output(BUTTON_OUT, GPIO.LOW)
+        
+        # Initialize last button state
+        global last_button_state
+        last_button_state = GPIO.input(BUTTON_IN)
+        
+        print("GPIO button setup complete")
+    except (ImportError, RuntimeError) as e:
+        print(f"GPIO button setup failed: {e}")
+        print("Running in development mode without GPIO")
 
 def draw():
     """
@@ -45,6 +70,35 @@ def draw():
         # go_kart.
         pass
 
+def check_button_press():
+    """
+    Check if the item button has been pressed.
+    GPIO in production and keyboard in development.
+    """
+    global button_pressed, last_button_state
+    
+    # Try to use GPIO if available
+    try:
+        current_button_state = GPIO.input(BUTTON_IN)
+        
+        # Check for falling edge (1 -> 0, button press)
+        if last_button_state == 1 and current_button_state == 0:
+            button_pressed = True
+            print("Button pressed (GPIO)")
+        
+        last_button_state = current_button_state
+        
+    except (NameError, RuntimeError):
+        # Fall back to keyboard for development
+        try:
+            # Check for space key (common standard for 'use item')
+            if key_is_pressed and key == ' ':
+                if not button_pressed:  # Avoid multiple triggers while held
+                    button_pressed = True
+                    print("Button pressed (Keyboard)")
+        except NameError:
+            # If even p5 key detection isn't available, we can't detect input
+            pass
 
 def update():
     """
@@ -61,13 +115,22 @@ def update():
     location_packet = Packet(Packet.LOCATION, kart_id=KART_ID, location=current_location())
     
     race.update_ranking(location_packet)
-    # check for finshed lap
     packet_queue.send(location_packet)
 
-    # Pickup item if I am near checkpoint
+    # Pickup item if kart near checkpoint
     race.local_pickup_item()
-    # update local state
-    # send attacks
+    
+    # Update local kart state (effects)
+    race.owned_kart.update_item_effect()
+    
+    # Check for button press
+    check_button_press()
+    
+    # Use item if button was pressed
+    if button_pressed:
+        if race.owned_kart._item_id is not None:
+            race.owned_kart.use_held_item()
+        button_pressed = False  # Reset after handling
 
     # Handle pending attack if one exists
     if race.owned_kart.pending_attack is not None:
