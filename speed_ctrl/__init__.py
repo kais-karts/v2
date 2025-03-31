@@ -10,7 +10,7 @@ UD_PIN  = 22
 
 # other
 MINSLEEP = .001
-NUMTAPS = 100
+NUMTAPS = 32
 INITIALIZED = False
 CURRENT_TAP = 0
 
@@ -83,7 +83,7 @@ def decrement():
     GPIO.output(UD_PIN, GPIO.LOW)
     time.sleep(MINSLEEP)
     edgeTrigger()
-    CURRENT_TAP = min(CURRENT_TAP - 1, 0)
+    CURRENT_TAP = max(CURRENT_TAP - 1, 0)
 
 def edgeTrigger():
     """
@@ -105,10 +105,11 @@ if __name__ == "__main__":
     val = 0
     while True:
         # test to measure IC voltage after attempted speed multiplier
-        val = (val + .1) % 1
-        print(f"attempted to set speed multiplier to {val} got {set_speed_multiplier(val)} instead")
-        time.sleep(2)
+        # val = (val + .1) % 1
+        # print(f"attempted to set speed multiplier to {val} got {set_speed_multiplier(val)} instead {CURRENT_TAP}")
+        # time.sleep(2)
 
         # test to see how many taps there actually are (we already got scammed once)
-        # increment()
-        # time.sleep(1)        
+        increment()
+        print(f"{CURRENT_TAP}")
+        time.sleep(1)        
