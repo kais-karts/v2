@@ -15,7 +15,7 @@
 -   Check button press
 - [X] Implement item hit
 - Figure out overlap between items and such
-- Make Item dataclasses
+- [X] Make Item dataclasses
 
 ## Testing
 - Implement testing paradigm with and without UI
