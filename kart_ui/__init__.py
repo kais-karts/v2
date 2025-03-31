@@ -4,6 +4,7 @@ from kart_ui.go_kart import GoKart
 from kart_ui.race import Race
 from comms import PacketQueue, Packet
 from constants import PORT, KART_ID, NUM_GO_KARTS
+from items import ITEMS, ItemTarget
 from localization import current_location
 from speed_ctrl import set_speed_multiplier
 
@@ -60,13 +61,69 @@ def update():
     location_packet = Packet(Packet.LOCATION, kart_id=KART_ID, location=current_location())
     
     race.update_ranking(location_packet)
+    # check for finshed lap
     packet_queue.send(location_packet)
 
     # Pickup item if I am near checkpoint
     race.local_pickup_item()
+    # update local state
+    # send attacks
+
+    # Handle pending attack if one exists
+    if race.owned_kart.pending_attack is not None:
+        attack_packets = create_attack_packet(race.owned_kart.pending_attack)
+        for attack_packet in attack_packets:
+            packet_queue.send(attack_packet)
+            print(f"Sent {ITEMS[attack_packet.data[1]]} to kart {attack_packet.data[0]}")
+        race.owned_kart.pending_attack = None
 
     # Update the speed control for this go kart
     set_speed_multiplier(race.owned_kart.speed_multiplier)
+
+def create_attack_packet(item_id):
+    """
+    Creates attack packets based on the item type and its targeting rules.
+    
+    Args:
+        item_id (int): The identifier of the item being used for the attack
+        
+    Returns:
+        list[Packet]: A list of attack packets ready to be sent through the packet queue.
+    """
+    item = ITEMS[item_id]
+    target_type = item.target
+    
+    # Handle different targeting types
+    target_kart_ids = []
+    
+    if target_type == ItemTarget.FRONT:
+        # Find the kart directly in front of us
+        my_rank = race.rankings.index(KART_ID)
+        if my_rank > 0:  # Not in first place
+            target_kart_ids = [race.rankings[my_rank - 1]]
+    
+    elif target_type == ItemTarget.BEHIND:
+        # Find the kart directly behind us
+        my_rank = race.rankings.index(KART_ID)
+        if my_rank < len(race.rankings) - 1:  # Not in last place
+            target_kart_ids = [race.rankings[my_rank + 1]]
+    
+    elif target_type == ItemTarget.ALL_OTHERS:
+        # Target all karts except self
+        target_kart_ids = [kart_id for kart_id in race.rankings if kart_id != KART_ID]
+    
+    elif target_type == ItemTarget.LEADER:
+        # Target the leader (first place)
+        if len(race.rankings) > 0 and race.rankings[0] != KART_ID:
+            target_kart_ids = [race.rankings[0]]
+    
+    attack_packets = []
+    # Create attack packets for all targets
+    for target_id in target_kart_ids:
+        attack_packet = Packet(Packet.ATTACK, data=(target_id, item_id))
+        attack_packets.append(attack_packet)
+    
+    return attack_packets
 
 def start():
     """

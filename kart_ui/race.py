@@ -15,7 +15,7 @@ class Race():
         self._me = GoKart(KART_ID, game_map)
         self._game_map = game_map
         self._go_karts = {KART_ID: self._me}
-        self._rankings = [KART_ID]
+        self.rankings = [KART_ID]
 
     def _add_go_kart(self, go_kart: GoKart):
         """
@@ -25,7 +25,7 @@ class Race():
             go_kart (GoKart): Go-Kart to add
         """
         self._go_karts[go_kart.id] = go_kart
-        self._rankings.append(go_kart.id) # Not necessarily last place, but assumes rankings will be sorted
+        self.rankings.append(go_kart.id) # Not necessarily last place, but assumes rankings will be sorted
 
     def update_ranking(self, packet: Packet):
         """
@@ -46,17 +46,17 @@ class Race():
         kart = self._go_karts[kart_id]
         kart.update_position(kart_position)
         
-        self._rankings.remove(kart_id)
-        new_rank = len(self._rankings)  # Default to last position
+        self.rankings.remove(kart_id)
+        new_rank = len(self.rankings)  # Default to last position
 
         # Check where the kart should be ranked
-        for ix, other_kart_id in enumerate(self._rankings):
+        for ix, other_kart_id in enumerate(self.rankings):
             if kart > self._go_karts[other_kart_id]:
                 new_rank = ix
                 break
 
         # Insert kart at new position
-        self._rankings.insert(new_rank, kart_id)
+        self.rankings.insert(new_rank, kart_id)
             
     def apply_item(self, packet: Packet):
         """
@@ -76,14 +76,14 @@ class Race():
         """
         Picks up an item locally if item checkpoint is reached 
         """
-        place = self._rankings.index(KART_ID) + 1
+        place = self.rankings.index(KART_ID) + 1
         self._me.pickup_item(place)
 
     def __iter__(self):
         """
         Iterate through the go-karts in this race, in order of their ranking
         """
-        for ranking in self._rankings:
+        for ranking in self.rankings:
             yield self._go_karts[ranking]
     
     @property

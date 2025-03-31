@@ -1,4 +1,5 @@
-from constants import KART_ID, BASE_MULTIPLIER, ITEMS, ITEM_NAMES, ITEM_WEIGHTS
+from constants import KART_ID, BASE_MULTIPLIER
+from items import ITEMS, ItemEffect, ItemTarget
 from kart_ui.map import Map
 
 import numpy as np
@@ -17,6 +18,7 @@ class GoKart():
         item_id (int | None): Identifier of the currently held item, or 'None' if no item.
         ongoing_effect (bool): Whether the kart is undergoing the effects of an item.
         effect_ends_at (float | None): Timestamp at which the ongoing_effect ends, or 'None' if no ongoing_effect.
+        pending_attack (int | None): Identifier of the item to be sent off to other Karts
     """
     def __init__(self, id: int, game_map: Map):
         self._id = id
@@ -27,6 +29,7 @@ class GoKart():
         self._item_id = None
         self._ongoing_effect = False
         self._effect_ends_at = None
+        self._pending_attack = None
 
     @property
     def id(self) -> int:
@@ -59,6 +62,17 @@ class GoKart():
         Number of laps completed by this kart
         """
         return self._laps
+    
+    @property
+    def pending_attack(self) -> int | None:
+        """
+        Identifier of the item to be sent as an attack, or None if no pending attack
+        """
+        return self._pending_attack
+        
+    @pending_attack.setter
+    def pending_attack(self, val):
+        self._pending_attack = val
 
     def __gt__(self, other) -> bool:
         """
@@ -84,12 +98,15 @@ class GoKart():
         if not self._game_map.is_within_item_checkpoint(self._position):
             return
         
+        ITEM_WEIGHTS = [item.distribution for item in ITEMS]
+
         weights = np.array(ITEM_WEIGHTS)
         weights = weights / weights.sum(axis=0)
 
-        item = np.random.choice(ITEM_NAMES, p=weights[:, place-1])
-        self._item_id = ITEM_NAMES.index(item)
-        print(f"Picked up item: {item}")
+        item = np.random.choice(len(ITEMS), p=weights[:, place-1])
+
+        self._item_id = item
+        print(f"Picked up item: {ITEMS[item].name}")
 
     def use_held_item(self) -> None:
         """
@@ -98,9 +115,16 @@ class GoKart():
         if self._item_id is None:
             print("No item to use.")
             return
+        
+        item = self._item_id
 
-        if self.apply_item(self._item_id):
+        if item.effect == ItemEffect.BUFF and item.target == ItemTarget.SELF:
+            if self.apply_item(self._item_id):
+                self._item_id = None
+        else:
+            self._pending_attack = item
             self._item_id = None
+            print(f"Ready to send {item.name} to {item.target.value} target")
 
     def apply_item(self, item_id) -> bool:
         """
@@ -110,12 +134,12 @@ class GoKart():
             Whether effects could be applied
         """
         self.update_item_effect()
-        if not self._ongoing_effect: #TODO: DO WE WANT THIS?
-            item_name = list(ITEMS.keys())[item_id]
-            multiplier, duration = ITEMS[item_name]
-            print(f"Using {item_name} → multiplier: {multiplier}, duration: {duration}s")
 
-            self.apply_speed_effect(multiplier, duration)
+        if not self._ongoing_effect: #TODO: Do we want attacks to be blocked by ongoing debuff? (hit by lightning before red shell effect ends)
+            item = ITEMS[item_id]
+            print(f"Using {item.name} → multiplier: {item.speed_multiplier}, duration: {item.duration}s")
+
+            self.apply_speed_effect(item.speed_multiplier, item.duration)
             return True
         return False
 
