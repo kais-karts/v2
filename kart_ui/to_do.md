@@ -12,7 +12,7 @@
 ## Item
 - [X] Implement item pickup 
 - [X] Implement item use
--   Check button press
+- [X] Check button press
 - [X] Implement item hit
 - Figure out overlap between items and such
 - [X] Make Item dataclasses
