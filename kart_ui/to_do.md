@@ -11,9 +11,11 @@
 
 ## Item
 - [X] Implement item pickup 
-- Implement item use
+- [X] Implement item use
+-   Check button press
 - [X] Implement item hit
 - Figure out overlap between items and such
+- Make Item dataclasses
 
 ## Testing
 - Implement testing paradigm with and without UI

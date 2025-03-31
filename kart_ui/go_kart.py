@@ -109,12 +109,12 @@ class GoKart():
         Returns
             Whether effects could be applied
         """
-        self.check_item_effect()
+        self.update_item_effect()
         if not self._ongoing_effect: #TODO: DO WE WANT THIS?
             item_name = list(ITEMS.keys())[item_id]
             multiplier, duration = ITEMS[item_name]
             print(f"Using {item_name} → multiplier: {multiplier}, duration: {duration}s")
-            
+
             self.apply_speed_effect(multiplier, duration)
             return True
         return False
@@ -127,7 +127,7 @@ class GoKart():
         self._ongoing_effect = True
         self._effect_ends_at = time.time() + duration
 
-    def check_item_effect(self) -> None:
+    def update_item_effect(self) -> None:
         """
         Checks whether item effect duration has been reached and adjusts state.
         """
@@ -139,6 +139,6 @@ class GoKart():
                 print("Speed effect ended, reset to base.")
 
     def update_local_state(self):
-        self.check_item_effect()
-        
+        self.update_item_effect()
+        self.check_button_pressed()
         # check for button pressed
