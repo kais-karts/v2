@@ -1,10 +1,10 @@
 from p5 import *
 import RPi.GPIO as GPIO
 
-from kart_ui.go_kart import GoKart
+from kart_ui.map import Map
 from kart_ui.race import Race
 from comms import PacketQueue, Packet
-from constants import PORT, KART_ID, NUM_GO_KARTS, BUTTON_IN, BUTTON_OUT
+from constants import PORT, KART_ID, BUTTON_IN, BUTTON_OUT, ITEM_CHECKPOINTS, START_LINE, TRACK_PATH
 from items import ITEMS, ItemTarget
 from localization import current_location
 from speed_ctrl import set_speed_multiplier
@@ -13,7 +13,8 @@ from speed_ctrl import set_speed_multiplier
 global mouse_is_pressed, mouse_x, mouse_y, key_is_pressed, key
 
 packet_queue = PacketQueue(PORT)
-race = Race(NUM_GO_KARTS)
+map = Map(START_LINE, ITEM_CHECKPOINTS, TRACK_PATH)
+race = Race(map)
 
 # Global variables to track button state
 button_pressed = False

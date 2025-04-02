@@ -1,6 +1,7 @@
 # Dump for game logic
 
 ## Location
+- [x] Create map object
 - Figure out how to process (x,y) location to map location
 - Implement check for passing finish line, item checkpoint, or irregular movement
 
