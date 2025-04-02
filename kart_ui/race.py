@@ -1,7 +1,7 @@
 from kart_ui import GoKart, Map
 from comms import Packet
 from constants import KART_ID
-
+from components.api import API
 class Race():
     """
     Complete state of a race.
@@ -12,11 +12,12 @@ class Race():
         go_karts (dict[int, GoKart]): Mapping of go-kart IDs to their respective GoKart objects
         rankings (list[int]): List of go-kart IDs in order of their current ranking
     """
-    def __init__(self, game_map: Map):
-        self._me = GoKart(KART_ID, game_map)
+    def __init__(self, game_map: Map, ui_api: API):
+        self._me = GoKart(KART_ID, game_map, ui_api)
         self._game_map = game_map
         self._go_karts = {KART_ID: self._me}
         self.rankings = [KART_ID]
+        self._ui_api = ui_api
 
     def _add_go_kart(self, go_kart: GoKart):
         """
@@ -72,6 +73,8 @@ class Race():
 
         if victim_id == KART_ID:
             self._me.apply_item(item_id)
+        
+            
 
     def local_pickup_item(self):
         """

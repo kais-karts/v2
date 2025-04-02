@@ -1,5 +1,5 @@
 from typing import Tuple
-
+from components.api import API
 class Map:
     """
     Represents the race track and all location-based logic.
@@ -9,7 +9,7 @@ class Map:
         item_checkpoints (List[Tuple[float, float]]): List of item pickup zones
         track_path (List[Tuple[float, float]]): Ordered list of "ideal line" points
     """
-    def __init__(self, start_line: tuple[float, float], item_checkpoints: list[tuple[float, float]], track_path: list[tuple[float, float]]):
+    def __init__(self, start_line: tuple[float, float], item_checkpoints: list[tuple[float, float]], track_path: list[tuple[float, float]], ui_api: API):
         self._start_line = start_line
         self._item_checkpoints = item_checkpoints
         self._track_path = track_path
