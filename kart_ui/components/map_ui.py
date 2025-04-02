@@ -6,7 +6,7 @@ KART_WIDTH = 100
 MYSTERY_BOX_WIDTH = 50
 
 global mouse_x, mouse_y
-class Map:
+class MapUI:
     def __init__(self, debugger):
         self.debugger = debugger
         self.map_image = loadImage("kart_ui/images/map.png")
