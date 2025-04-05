@@ -17,6 +17,7 @@ class Race():
         game_map (Map): The Map object that this race is played on.
         go_karts (dict[int, GoKart]): Mapping of go-kart IDs to their respective GoKart objects
         rankings (list[int]): List of go-kart IDs in order of their current ranking
+        ui_api (API): API for the local kart UI
     """
     def __init__(self, game_map: Map, ui_api: API):
         self._me: GoKart = GoKart(KART_ID, game_map, ui_api)
@@ -66,6 +67,8 @@ class Race():
 
         # Insert kart at new position
         self.rankings.insert(new_rank, kart_id)
+
+        self.ui.update_map([(kart_id, *kart.position) for kart_id, kart in self._go_karts.items()])
             
     def apply_attack(self, packet: Packet):
         """

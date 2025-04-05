@@ -1,10 +1,13 @@
+from typing import Optional, Tuple
+import numpy as np
+import time
+
+
 from constants import KART_ID, BASE_MULTIPLIER
 from items import ITEMS, ItemEffect, ItemTarget, Item
 from map import Map
 
-import numpy as np
-import time
-
+from components.api import API
 
 class GoKart():
     """
@@ -20,17 +23,19 @@ class GoKart():
         ongoing_effect (bool): Whether the kart is undergoing the effects of an item.
         effect_ends_at (float | None): Timestamp at which the ongoing_effect ends, or 'None' if no ongoing_effect.
         pending_attack (int | None): Identifier of the item to be sent off to other Karts
+        ui_api (API): API for the local kart UI
     """
-    def __init__(self, id: int, game_map: Map):
-        self._id = id
-        self._game_map = game_map
-        self._position = None
-        self._laps = 0
-        self.speed_multiplier = BASE_MULTIPLIER
-        self._item_id = None
-        self._ongoing_effect = False
-        self._effect_ends_at = None
-        self._pending_attack = None
+    def __init__(self, id: int, game_map: Map, ui_api: API):
+        self._id: int = id
+        self._game_map: Map = game_map
+        self._position: Optional[Tuple[float, float]] = None # type: ignore
+        self._laps: int = 0
+        self.speed_multiplier; float = BASE_MULTIPLIER
+        self._item_id: Optional[int] = None
+        self._ongoing_effect: bool = False
+        self._effect_ends_at: Optional[float] = None # type: ignore
+        self._pending_attack: Optional[int] = None
+        self.ui: API = ui_api
 
     @property
     def id(self) -> int:
@@ -107,7 +112,9 @@ class GoKart():
         item = np.random.choice(len(ITEMS), p=weights[:, place-1])
 
         self._item_id = item
-        print(f"Picked up item: {ITEMS[item].name}")
+        item_name = ITEMS[item].name
+        self.ui.item_get(item_name)
+        print(f"Picked up item: {item_name}")
 
     def use_held_item(self) -> None:
         """
@@ -140,8 +147,10 @@ class GoKart():
             item: Item = ITEMS[item_id]
             if item.effect == ItemEffect.BUFF:
                 print(f"Using {item.name} → multiplier: {item.speed_multiplier}, duration: {item.duration}s")
+                self.ui.item_use()
             else:
                 print(f"Hit with {item.name} → multiplier: {item.speed_multiplier}, duration: {item.duration}s")
+                self.ui.item_hit(item.name)
 
             self.apply_speed_effect(item.speed_multiplier, item.duration)
             return True
