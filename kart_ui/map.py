@@ -1,5 +1,6 @@
 from typing import Tuple
 from components.api import API
+
 class Map:
     """
     Represents the race track and all location-based logic.
