@@ -1,5 +1,5 @@
 from constants import KART_ID, BASE_MULTIPLIER
-from items import ITEMS, ItemEffect, ItemTarget
+from items import ITEMS, ItemEffect, ItemTarget, Item
 from map import Map
 
 import numpy as np
@@ -134,14 +134,18 @@ class GoKart():
         Returns
             Whether effects could be applied
         """
-        self.update_item_effect()
+        self.update_item_effect() # Updates current item effect before attempting to apply item
 
-        if not self._ongoing_effect: #TODO: Do we want attacks to be blocked by ongoing debuff? (hit by lightning before red shell effect ends)
-            item = ITEMS[item_id]
-            print(f"Using {item.name} → multiplier: {item.speed_multiplier}, duration: {item.duration}s")
+        if not self._ongoing_effect: #TODO: Do we want effects applied if there is an ongoing effect? Maybe debuff should negate a buff? Or for specific items?
+            item: Item = ITEMS[item_id]
+            if item.effect == ItemEffect.BUFF:
+                print(f"Using {item.name} → multiplier: {item.speed_multiplier}, duration: {item.duration}s")
+            else:
+                print(f"Hit with {item.name} → multiplier: {item.speed_multiplier}, duration: {item.duration}s")
 
             self.apply_speed_effect(item.speed_multiplier, item.duration)
             return True
+        
         return False
 
     def apply_speed_effect(self, multiplier: float, duration: float):

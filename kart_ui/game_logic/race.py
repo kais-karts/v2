@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from comms import Packet
 
 from constants import KART_ID
@@ -17,11 +19,11 @@ class Race():
         rankings (list[int]): List of go-kart IDs in order of their current ranking
     """
     def __init__(self, game_map: Map, ui_api: API):
-        self._me = GoKart(KART_ID, game_map, ui_api)
-        self._game_map = game_map
-        self._go_karts = {KART_ID: self._me}
-        self.rankings = [KART_ID]
-        self._ui_api = ui_api
+        self._me: GoKart = GoKart(KART_ID, game_map, ui_api)
+        self._game_map: Map = game_map
+        self._go_karts: Dict[int, GoKart] = {KART_ID: self._me}
+        self.rankings: List[int] = [KART_ID]
+        self.ui: API = ui_api
 
     def _add_go_kart(self, go_kart: GoKart):
         """
@@ -65,9 +67,10 @@ class Race():
         # Insert kart at new position
         self.rankings.insert(new_rank, kart_id)
             
-    def apply_item(self, packet: Packet):
+    def apply_attack(self, packet: Packet):
         """
-        Apply an item to a Go-Kart in this race
+        Applies an attack (debuff item) to the local Go Kart in the race if it is the target
+            else does nothing
 
         Args:
             packet (Packet): Packet describing the item being applied

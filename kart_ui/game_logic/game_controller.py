@@ -65,7 +65,7 @@ class GameController:
             match packet.tag:
                 case Packet.PING: pass
                 case Packet.LOCATION: self.race.update_ranking(packet)
-                case Packet.ATTACK: self.race.apply_item(packet)
+                case Packet.ATTACK: self.race.apply_attack(packet)
         
         # Update my location and broadcast to everyone else
         location_packet = Packet(Packet.LOCATION, kart_id=KART_ID, location=current_location())
