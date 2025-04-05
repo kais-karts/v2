@@ -1,7 +1,11 @@
-from kart_ui import GoKart, Map
 from comms import Packet
+
 from constants import KART_ID
+from map import Map
+from go_kart import GoKart
+
 from components.api import API
+
 class Race():
     """
     Complete state of a race.
@@ -36,7 +40,8 @@ class Race():
         Args:
             packet (Packet): Packet describing the new location of one of the go karts
         """
-        assert packet.tag == Packet.LOCATION
+        if packet.tag != Packet.LOCATION:
+            return
 
         kart_id, kart_position = packet.kart_id, packet.location
 
@@ -67,7 +72,8 @@ class Race():
         Args:
             packet (Packet): Packet describing the item being applied
         """
-        assert packet.tag == Packet.ATTACK
+        if packet.tag != Packet.ATTACK:
+            return
 
         victim_id, item_id = packet.data
 

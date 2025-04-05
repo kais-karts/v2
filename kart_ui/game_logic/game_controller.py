@@ -4,15 +4,14 @@ from p5 import *
 import RPi.GPIO as GPIO
 
 from comms import Packet, PacketQueue
-from constants import KART_ID, BUTTON_IN
-from items import ITEMS, ItemTarget
 from localization import current_location
 from speed_ctrl import set_speed_multiplier
-from items import ITEMS
 
-from kart_ui.go_kart import GoKart
-from kart_ui.map import Map
-from kart_ui.race import Race
+from constants import KART_ID, BUTTON_IN
+from items import ITEMS, ItemTarget
+from go_kart import GoKart
+from map import Map
+from race import Race
 
 from components.api import API
 

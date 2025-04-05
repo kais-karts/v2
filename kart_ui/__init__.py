@@ -1,11 +1,13 @@
 from p5 import *
 import RPi.GPIO as GPIO
 
-from kart_ui.map import Map
-from kart_ui.race import Race
-from kart_ui.game_controller import GameController, last_button_state
 from comms import PacketQueue
+
 from constants import PORT, BUTTON_IN, BUTTON_OUT, ITEM_CHECKPOINTS, START_LINE, TRACK_PATH
+from game_logic.map import Map
+from game_logic.race import Race
+from game_logic.game_controller import GameController, last_button_state
+
 from components.shuffler import Shuffler
 from components.debugger import Debugger
 from components.map_ui import MapUI

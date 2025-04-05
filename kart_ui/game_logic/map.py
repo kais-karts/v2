@@ -1,5 +1,5 @@
 from typing import Tuple
-from components.api import API
+from kart_ui.components.api import API
 
 class Map:
     """

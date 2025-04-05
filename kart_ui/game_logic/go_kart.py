@@ -1,6 +1,6 @@
 from constants import KART_ID, BASE_MULTIPLIER
 from items import ITEMS, ItemEffect, ItemTarget
-from kart_ui.map import Map
+from map import Map
 
 import numpy as np
 import time
