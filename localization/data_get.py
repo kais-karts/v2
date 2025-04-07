@@ -34,11 +34,8 @@ def latlon_to_meters(lat, lon, lat0, lon0):
     R = 6378137  # Radius of the Earth in meters
     dlat = np.radians(lat - lat0)
     dlon = np.radians(lon - lon0)
-    a = np.sin(dlat / 2) ** 2 + np.cos(np.radians(lat0)) * np.cos(np.radians(lat)) * np.sin(dlon / 2) ** 2
-    c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-    distance = R * c
-    x = distance * np.cos(np.radians(lat))
-    y = distance * np.sin(np.radians(lat))
+    x = R * dlon * np.cos(np.radians(lat0))
+    y = R * dlat
     return x, y
 
 # Plot the collected GPS data
