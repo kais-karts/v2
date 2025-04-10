@@ -4,10 +4,10 @@ import time
 
 
 from constants import KART_ID, BASE_MULTIPLIER
-from items import ITEMS, ItemEffect, ItemTarget, Item
-from map import Map
+from kart_ui.items import ITEMS, ItemEffect, ItemTarget, Item
+from kart_ui.game_logic.map import Map
 
-from components.api import API
+from kart_ui.components.api import API
 
 class GoKart():
     """

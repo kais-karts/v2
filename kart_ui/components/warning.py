@@ -1,5 +1,5 @@
 from enum import Enum
-from game_logic.constants import ITEMS
+from kart_ui.items import ITEMS
 from p5 import *
 from p5.core.image import PImage
 from time import time

@@ -1,5 +1,5 @@
 from enum import Enum
-from game_logic.constants import ITEMS
+from kart_ui.items import ITEMS
 from p5 import *
 from p5.core.image import PImage
 from time import time
@@ -14,12 +14,12 @@ SHUFFLE_PERIOD = .1 #how long each item is displayed during shuffling in seconds
 SHUFFLE_DURATION = 2 #how long the shuffling lasts in seconds
 IMAGE_SIZE = 1024 - 200
 
-SHUFFLED_ITEMS = list(ITEMS.keys())
+SHUFFLED_ITEMS = [item.name for item in ITEMS]
 class Shuffler:
     def __init__(self, debugger):
         self.debugger = debugger
         # Load all item images
-        self.images = {item: loadImage(f"kart_ui/images/items/{item}.png") for item in ITEMS}
+        self.images = {item: loadImage(f"kart_ui/images/items/{item.name}.png") for item in ITEMS}
         self.images['no-item'] = loadImage("kart_ui/images/items/no-item.png")
 
         self.state = ShuffleState.NO_ITEM

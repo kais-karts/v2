@@ -1,5 +1,7 @@
 from p5 import *
-from game_logic.constants import CHARACTERS, MYSTERY_BOXES
+from kart_ui.characters import CHARACTERS
+from kart_ui.mystery_boxes import MYSTERY_BOXES
+
 MAP_WIDTH = 1024
 MAP_VERTICAL_OFFSET = 100
 KART_WIDTH = 100

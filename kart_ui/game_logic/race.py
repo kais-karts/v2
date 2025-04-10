@@ -3,10 +3,10 @@ from typing import Dict, List
 from comms import Packet
 
 from constants import KART_ID
-from map import Map
-from go_kart import GoKart
+from kart_ui.game_logic.map import Map
+from kart_ui.game_logic.go_kart import GoKart
 
-from components.api import API
+from kart_ui.components.api import API
 
 class Race():
     """

@@ -1,19 +1,19 @@
 """ Game Controller """
 
 from p5 import *
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 from comms import Packet, PacketQueue
 from localization import current_location
 from speed_ctrl import set_speed_multiplier
 
 from constants import KART_ID, BUTTON_IN
-from items import ITEMS, ItemTarget
-from go_kart import GoKart
-from map import Map
-from race import Race
+from kart_ui.items import ITEMS, ItemTarget
+from kart_ui.game_logic.go_kart import GoKart
+from kart_ui.game_logic.map import Map
+from kart_ui.game_logic.race import Race
 
-from components.api import API
+from kart_ui.components.api import API
 
 # Global variables to track button state
 button_pressed = False
@@ -35,7 +35,7 @@ class GameController:
         
         # Try to use GPIO if available
         try:
-            current_button_state = GPIO.input(BUTTON_IN)
+            current_button_state = 0 #GPIO.input(BUTTON_IN)
             
             # Check for falling edge (1 -> 0, button press)
             if last_button_state == 1 and current_button_state == 0:

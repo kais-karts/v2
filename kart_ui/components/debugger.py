@@ -1,7 +1,9 @@
 from p5 import *
+from kart_ui.items import ITEMS
+
 global width, height
-from game_logic.constants import ITEMS, MAP_METERS_PER_PIXEL
-SHUFFLED_ITEMS = list(ITEMS.keys())
+
+SHUFFLED_ITEMS = [item.name for item in ITEMS]
 TEST_KART_POSITIONS = [(),]
 class Debugger:
     def __init__(self, on=False):
@@ -45,6 +47,7 @@ class Debugger:
             elif width/2 < mouse_x < 3*width/4 and height - 200 < mouse_y < height:
                 item = SHUFFLED_ITEMS[int(random_uniform(0, len(SHUFFLED_ITEMS)))]
                 self.shuffler.shuffle(item)
+    
     def show_image_outline(self, x, y, width, height, loc='center'):
         if self.on:
             stroke(255, 0, 0)  # Red border
@@ -55,8 +58,7 @@ class Debugger:
             elif loc == 'top_left':
                 rect(x, y, width, height)
             elif loc == 'top_right':
-                rect(x-width, y, width, height)
-                
+                rect(x-width, y, width, height)       
 
     def set_shuffler(self, shuffler):
         self.shuffler = shuffler
