@@ -95,7 +95,7 @@
 		(descr "Mounting Hole 2.1mm, no annular")
 		(tags "mounting hole 2.1mm no annular")
 		(property "Reference" "INC"
-			(at 3.25 -2 270)
+			(at 3.25 -2 -90)
 			(layer "F.SilkS")
 			(uuid "ac25a260-c878-465f-8e7d-e4398d9417fc")
 			(effects
@@ -106,7 +106,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 0 3.2 270)
+			(at 0 3.2 -90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9825e263-790e-48aa-b58b-6c5b44f915f2")
@@ -181,7 +181,7 @@
 			(uuid "7e2c588b-a23d-4c52-8ee7-61f640d5d61c")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 270)
+			(at 0 0 -90)
 			(layer "F.Fab")
 			(uuid "ae25da0d-d986-41a9-99eb-4f6d798c797a")
 			(effects
@@ -217,7 +217,7 @@
 			)
 		)
 		(property "Value" "Pigtail In"
-			(at 4.8 2.47 270)
+			(at 4.8 2.47 -90)
 			(layer "F.Fab")
 			(uuid "c138a671-d64e-4eb9-b685-1cb51535698f")
 			(effects
@@ -422,7 +422,7 @@
 			(uuid "910efe65-9107-4bc4-9d20-f25816a7bccc")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 4.8 0 270)
+			(at 4.8 0 -90)
 			(layer "F.Fab")
 			(uuid "a6c2e5a8-a91f-4073-b495-9c0d4165a236")
 			(effects
@@ -1072,7 +1072,7 @@
 			)
 		)
 		(fp_text user "*"
-			(at -2.97815 -3.6068 270)
+			(at -2.97815 -3.6068 -90)
 			(layer "F.SilkS")
 			(uuid "efa2f004-ff77-4950-8844-1f8aa02c97b5")
 			(effects
@@ -1095,7 +1095,7 @@
 			)
 		)
 		(fp_text user "*"
-			(at -1.6129 -2.4257 270)
+			(at -1.6129 -2.4257 -90)
 			(layer "F.Fab")
 			(uuid "26512096-b79b-4ceb-aabb-ecf2dfef3dbb")
 			(effects
@@ -1208,7 +1208,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C1"
-			(at 2.75 0 360)
+			(at 2.75 0 0)
 			(layer "F.SilkS")
 			(uuid "410e5436-e1fe-4300-868b-f54f2c760c6b")
 			(effects
@@ -1219,7 +1219,7 @@
 			)
 		)
 		(property "Value" "0.1µF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(uuid "22775a7c-664c-43d6-9ea7-d712de12a8a4")
 			(effects
@@ -1371,7 +1371,7 @@
 			(uuid "d46d800e-f622-4bff-a9e3-97edffcc78f1")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "49d9f3ea-31d4-42ce-89fc-79dd4a3fb1c7")
 			(effects
@@ -1760,7 +1760,7 @@
 		(descr "Mounting Hole 2.1mm, no annular")
 		(tags "mounting hole 2.1mm no annular")
 		(property "Reference" "U/D"
-			(at 3.25 -1.75 270)
+			(at 3.25 -1.75 -90)
 			(layer "F.SilkS")
 			(uuid "3db09505-6261-42a8-b998-9876c35126ce")
 			(effects
@@ -1771,7 +1771,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 0 3.2 270)
+			(at 0 3.2 -90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "b20e1555-58c1-48d2-933f-221109ee2b1b")
@@ -1846,7 +1846,7 @@
 			(uuid "d900a6fe-3a99-4059-baf0-ac0a3f46d360")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 270)
+			(at 0 0 -90)
 			(layer "F.Fab")
 			(uuid "43cd3a73-a4de-463d-b07e-9e73debe0948")
 			(effects
@@ -1871,7 +1871,7 @@
 		(descr "Mounting Hole 2.1mm, no annular")
 		(tags "mounting hole 2.1mm no annular")
 		(property "Reference" "GND"
-			(at 3.25 -1.75 270)
+			(at 3.25 -1.75 -90)
 			(layer "F.SilkS")
 			(uuid "161723f2-8e28-4a72-a1ee-c1a20bcb2ccb")
 			(effects
@@ -1882,7 +1882,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 0 3.2 270)
+			(at 0 3.2 -90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "92e4c7d0-0b30-4634-8cd7-dcce3b061694")
@@ -1957,7 +1957,7 @@
 			(uuid "b8512bda-7176-49f3-a16f-c1649bde05b7")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 270)
+			(at 0 0 -90)
 			(layer "F.Fab")
 			(uuid "b1c7a980-883e-4962-8898-db762d36d3be")
 			(effects
@@ -1982,7 +1982,7 @@
 		(descr "SOIC, 8 Pin (JEDEC MS-012AA, https://www.analog.com/media/en/package-pcb-resources/package/pkg_pdf/soic_narrow-r/r_8.pdf), generated with kicad-footprint-generator ipc_gullwing_generator.py")
 		(tags "SOIC SO")
 		(property "Reference" "U2"
-			(at 0.025 0 360)
+			(at 0.025 0 0)
 			(layer "F.SilkS")
 			(uuid "5083e2b2-2cbd-41f9-b596-df7d58a7b53a")
 			(effects
@@ -1993,7 +1993,7 @@
 			)
 		)
 		(property "Value" "TL082"
-			(at 0 3.4 360)
+			(at 0 3.4 0)
 			(layer "F.Fab")
 			(uuid "56cd294c-bdd7-4705-8df3-2796a4dcfd51")
 			(effects
@@ -2187,7 +2187,7 @@
 			(uuid "60f3ac1b-1f2a-4a03-b736-417727ee8f14")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "e4a602c7-ebd9-4bde-ba08-dd232507e52e")
 			(effects
@@ -2489,7 +2489,7 @@
 		(descr "Mounting Hole 2.1mm, no annular")
 		(tags "mounting hole 2.1mm no annular")
 		(property "Reference" "+5V"
-			(at 3 -2 270)
+			(at 3 -2 -90)
 			(layer "F.SilkS")
 			(uuid "753a5e2a-cdd0-4095-91dc-90b736b4748f")
 			(effects
@@ -2500,7 +2500,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 0 3.2 270)
+			(at 0 3.2 -90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "bf5c4474-d49d-4888-84a6-ad19084b63ba")
@@ -2575,7 +2575,7 @@
 			(uuid "d757acad-e634-4fa5-af03-36f38abbc39d")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 270)
+			(at 0 0 -90)
 			(layer "F.Fab")
 			(uuid "ca406b2d-568e-4732-94a1-b1e01633922f")
 			(effects
@@ -2600,7 +2600,7 @@
 		(descr "Soldered wire connection, for 3 times 0.75 mm² wires, basic insulation, conductor diameter 1.25mm, outer diameter 2.3mm, size source Multi-Contact FLEXI-E 0.75 (https://ec.staubli.com/AcroFiles/Catalogues/TM_Cab-Main-11014119_(en)_hi.pdf), bend radius 3 times outer diameter, generated with kicad-footprint-generator")
 		(tags "connector wire 0.75sqmm")
 		(property "Reference" "V_{OUT}"
-			(at 4.8 -3 270)
+			(at 4.8 -3 -90)
 			(layer "F.SilkS")
 			(uuid "8af94b1f-00ce-4c46-8eaa-46585195ac4f")
 			(effects
@@ -2611,7 +2611,7 @@
 			)
 		)
 		(property "Value" "Pigtail Out"
-			(at 4.8 2.47 270)
+			(at 4.8 2.47 -90)
 			(layer "F.Fab")
 			(uuid "95305968-b28f-4589-a75d-76d883df4c03")
 			(effects
@@ -2816,7 +2816,7 @@
 			(uuid "025e7342-ae28-4756-857e-b3768bd66a9f")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 4.8 0 270)
+			(at 4.8 0 -90)
 			(layer "F.Fab")
 			(uuid "d09933c0-088d-47de-aa3c-3e657bb66056")
 			(effects
