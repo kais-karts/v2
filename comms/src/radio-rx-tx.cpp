@@ -4,6 +4,9 @@
 #include <SPI.h>
 #include <RH_RF69.h>
 #include <RHReliableDatagram.h>
+#include <RingBuf.h>
+#include "packet.h"
+#include "util.h"
 
 /************ Radio Setup ***************/
 #define MY_ADDRESS 1
@@ -19,6 +22,10 @@
 // Singleton instance of the radio driver
 RH_RF69 rf69(RFM69_CS, RFM69_INT);
 
+// Inbound packet from serial. We build packets one byte at a time since serial has no
+// notion of framing, e.g. when a packet ends/begin.
+RingBuf<u8, sizeof(Packet)> packet_rx;
+
 // Class to manage message delivery and receipt, using the driver declared above
 // RHReliableDatagram rf69_manager(rf69, MY_ADDRESS);
 
@@ -31,7 +38,7 @@ void setup()
     pinMode(RFM69_RST, OUTPUT);
     digitalWrite(RFM69_RST, LOW);
 
-    Serial.println("Feather RFM69 RX Test!");
+    Serial.println("Kai Kart Radio Initializing!");
     Serial.println();
 
     // manual reset
@@ -69,28 +76,15 @@ void setup()
     Serial.println(" MHz");
 }
 
-uint8_t counter = 0;
-uint8_t others_counter = 0;
-uint8_t missed_packets = 0;
-
 void loop()
 {
     // needs a delay to have time to recieve packets
     delay(25);
-    char radiopacket[20] = "Radio 1 says #";
-    itoa(counter++, radiopacket + 14, 10);
-    Serial.print("Radio 1 sending ");
-    Serial.println(counter);
 
-    // Send a message!
-    rf69.send((uint8_t *)radiopacket, strlen(radiopacket));
-    rf69.waitPacketSent();
-    Serial.println("Sent");
-
+    // If there is a packet available, read it and send it over serial
     if (rf69.available())
     {
         digitalWrite(LED, HIGH);
-        others_counter++;
 
         // Should be a message for us now
         uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
@@ -100,17 +94,37 @@ void loop()
             if (!len)
                 return;
             buf[len] = 0;
-            Serial.print("Received of len ");
-            Serial.print(len);
-            Serial.print(": ");
-            Serial.println((char *)buf);
-            Serial.print("RSSI: ");
-            Serial.println(rf69.lastRssi(), DEC);
+            // Send data over serial to Pi
+            Serial.write(buf, len);
         }
-        else
-        {
-            Serial.println("Receive failed");
-        }
-        digitalWrite(LED, LOW);
+        else { Serial.println("Receive failed"); }
     }
+
+    // If there is a packet available from serial, send it over the radio
+
+    if (!Serial.available()) {
+        return;
+    }
+
+    // Shift bytes in until the beginning is a valid 0xDEADBEEF magic
+    packet_rx.pushOverwrite(Serial.read());
+    if (!check_magic(packet_rx)) {
+        return;
+    }
+
+    // We got a valid packet! (hopefully)
+    Packet packet;
+    for (usize i = 0; i < sizeof(Packet); i++) {
+        packet_rx.pop(((u8 *)&packet)[i]);
+    }
+
+    // Sanity check
+    if (packet.id != PACKET_START_MAGIC) {
+        Serial.println("FUCKKKKKK");
+        return;
+    }
+
+    // Send it over the radio
+    rf69.send((uint8_t*) &packet, sizeof(packet));
+    rf69.waitPacketSent();
 }
