@@ -1,1 +1,6 @@
 .venv/
+kart_ui/__pycache__/
+kart_ui/components/__pycache__/
+kart_ui/game_logic/__pycache__/
+__pycache__/
+**/__pycache__/
