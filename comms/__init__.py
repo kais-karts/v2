@@ -1,24 +1,64 @@
 import serial
-import threading
 import time
+from construct import Struct, Int8ul, Int32ul, Const, Switch, this, Float32l, Padding, FixedSized
 
+# Packet type tags
+PING = 0
+LOCATION = 1
+ATTACK = 2
+
+MAX_PACKET_SIZE = 14 # byte size of largest packet
+
+
+# Common fields
+Header = Struct(
+    "magic" / Const(0xDEADBEEF, Int32ul),
+    "tag" / Int8ul
+)
+
+# Packet body schemas
+PacketBodies = {
+    PING: Struct(),
+    LOCATION: Struct(
+        "kart_id" / Int8ul,
+        "x" / Float32l,
+        "y" / Float32l
+    ),
+    ATTACK: Struct(
+        "kart_id" / Int8ul,
+        "item_id" / Int8ul
+    )
+}
+
+# Packet structure
+PacketSchema = FixedSized(MAX_PACKET_SIZE, Struct(
+    "header" / Header,
+    "body" / Switch(this.header.tag, PacketBodies, default=Struct())
+))
+
+
+# Packet wrapper class
 class Packet:
-    """
-    TODO
-    """
-    # These discriminants MUST match the ones in /comms/include/packet.h/Packet::tag
-    PING = 0
-    LOCATION = 1
-    ATTACK = 2
+    MAGIC = (0xDEADBEEF).to_bytes(4, byteorder='little')
+    SIZE = MAX_PACKET_SIZE
 
-    SIZE = 4 # TODO: size of the packet in bytes, change to not just be a constant
-
-    def __init__(self, tag: int, **data):
+    def __init__(self, tag, **kwargs):
         self.tag = tag
-        self.__dict__.update(data)
+        self.data = kwargs
 
-    def parse(bytes):
-        raise NotImplementedError("TODO")
+    def to_bytes(self):
+        return PacketSchema.build({
+            "header": {"tag": self.tag},
+            "body": self.data
+        })
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        parsed = PacketSchema.parse(data)
+        return Packet(parsed.header.tag, **parsed.body)
+
+    def __repr__(self):
+        return f"<Packet tag={self.tag} data={self.data}>"
 
 
 class PacketQueue:
@@ -30,23 +70,10 @@ class PacketQueue:
         """
         self.port = port
         self.serial = serial.Serial(port, baudrate=baudrate)
-        self.queue = []
-
-        # start a thread which reads from the serial port and adds packets to the queue
-        self.thread = threading.Thread(target=self._read_serial)
-        self.thread.start()
+        self.queue = bytes()
 
 
-    def _read_serial(self):
-        """Read from the serial port and add packets to the queue"""
-        while True:
-            # read a packet from the serial port
-            packet = self.serial.read(Packet.SIZE)
-            if packet:
-                # parse the packet and add it to the queue
-                self.queue.append(Packet.parse(packet))
-
-    def recv(self, timeout=None) -> Packet:
+    def recv(self) -> Packet:
         """Get the latest packet from the queue, or None if there's none available within the timeout.
 
         Args:
@@ -55,21 +82,36 @@ class PacketQueue:
         Returns:
             Packet: The packet at the top of the queue, or None if there is no packet.
         """
-        # wait for a packet to be available, or timeout
-        start_time = time.time() # seconds
-        while timeout is None or (time.time() - start_time) < timeout:
-            if self.queue:
-                break
-            
-        # return the packet at the top of the queue, or None if there is no packet
-        return self.queue.pop(0) if self.queue else None
+        # If there is something in the buffer, attempt to return the packet
+        if self.serial.in_waiting > 0:
+            self.queue += self.serial.read_all()
+            print("received packet bytes:", self.queue.hex())
+            start_idx = self.queue.find(Packet.MAGIC)
 
-    def send(self, packet: Packet):
+            # did not find the magic, return None
+            if start_idx == -1:
+                return None
+            # check if there's enough of a packet to return
+            if len(self.queue) < start_idx + Packet.SIZE: 
+                return None
+            
+            packet = self.queue[start_idx: start_idx + Packet.SIZE]
+            self.queue = self.queue[start_idx + Packet.SIZE:]
+
+            return packet
+        
+        else:
+            return None
+
+
+
+    def send(self, packet: bytes):
         """Send a packet over the network
 
         Args:
             packet (Packet): The packet to send
         """
+        print("sending packet bytes:", packet.hex())
         return self.serial.write(packet)
 
     def __iter__(self):
@@ -81,3 +123,12 @@ class PacketQueue:
         if packet is None:
             raise StopIteration
         return packet
+
+if __name__ == "__main__":
+    pq = PacketQueue("COM26")
+    while True:
+        packet = pq.recv()
+        print(packet) # TODO: print the packet in a human-readable format
+        send_packet = Packet(LOCATION, kart_id=3, x=1.0, y=2.0)
+        pq.send(send_packet.to_bytes())
+        time.sleep(1) # TODO: remove this, it's just for testing purposes

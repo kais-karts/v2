@@ -18,7 +18,7 @@ typedef size_t usize;
 typedef uint8_t u8;
 typedef int8_t i8;
 // 16-bit
-typedef uint16_t u16;
+// typedef uint16_t u16;
 typedef int16_t i16;
 // 32-bit
 typedef uint32_t u32;

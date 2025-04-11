@@ -1,53 +1,125 @@
-#include <Arduino.h>
-#include <WiFi.h>
-#include <esp_now.h>
-#include <esp_wifi.h>
-#include <esp_wifi_types.h>
-#include <RingBuf.h>
+// Feather RFM69 RX/TX Test
 
+#include <Arduino.h>
+#include <SPI.h>
+#include <RH_RF69.h>
+#include <RHReliableDatagram.h>
+#include <RingBuf.h>
 #include "packet.h"
 #include "util.h"
 
-// Packet unique IDs seen recently, to avoid double-echoing
-RingBuf<u32, 32> seen;
+/************ Radio Setup ***************/
+#define MY_ADDRESS 1
+
+// Change to 434.0 or other frequency, must match RX's freq!
+#define RF69_FREQ 915.0
+
+#define RFM69_CS 8
+#define RFM69_INT 7
+#define RFM69_RST 4
+#define LED 13
+
+// Singleton instance of the radio driver
+RH_RF69 rf69(RFM69_CS, RFM69_INT);
 
 // Inbound packet from serial. We build packets one byte at a time since serial has no
 // notion of framing, e.g. when a packet ends/begin.
 RingBuf<u8, sizeof(Packet)> packet_rx;
 
-// Callback when a packet is received from ESP-NOW
-void on_recv_packet(const u8* mac, const u8* data, i32 len);
-// Send a packet over ESP-NOW
-void send_packet(Packet* packet, bool overwrite_id = true);
+// Class to manage message delivery and receipt, using the driver declared above
+// RHReliableDatagram rf69_manager(rf69, MY_ADDRESS);
 
-void setup() {
-    WiFi.mode(WIFI_STA);
+void setup()
+{
+    Serial.begin(115200);
 
-    // Start ESP-NOW
-    if (esp_now_init() != ESP_OK) {
-        panic("Error initializing ESP-NOW");
+    pinMode(LED, OUTPUT);
+    pinMode(RFM69_RST, OUTPUT);
+    digitalWrite(RFM69_RST, LOW);
+
+    Serial.println("Kai Kart Radio Initializing!");
+    Serial.println();
+
+    // manual reset
+    digitalWrite(RFM69_RST, HIGH);
+    delay(10);
+    digitalWrite(RFM69_RST, LOW);
+    delay(10);
+
+    if (!rf69.init())
+    {
+        Serial.println("RFM69 radio init failed");
+        while (1)
+            ;
+    }
+    Serial.println("RFM69 radio init OK!");
+
+    // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM (for low power module)
+    // No encryption
+    if (!rf69.setFrequency(RF69_FREQ))
+    {
+        Serial.println("setFrequency failed");
     }
 
-    // Add ff:ff:ff:ff:ff:ff as a peer (i.e. broadcast to all)
-    esp_now_peer_info_t peer = {
-        .peer_addr = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
-        .channel = 1,
-        .encrypt = false,
-    };
-    esp_err_t res;
-    if ((res = esp_now_add_peer(&peer)) != ESP_OK) {
-        panic(esp_err_to_name(res));
-    }
+    // If you are using a high power RF69 eg RFM69HW, you *must* set a Tx power with the
+    // ishighpowermodule flag set like this:
+    rf69.setTxPower(20, true); // range from 14-20 for power, 2nd arg must be true for 69HCW
 
-    // Register callbacks
-    esp_now_register_recv_cb(esp_now_recv_cb_t(on_recv_packet));
+    // The encryption key has to be the same as the one in the server
+    uint8_t key[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+                     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+    rf69.setEncryptionKey(key);
+
+    Serial.print("RFM69 radio @");
+    Serial.print((int)RF69_FREQ);
+    Serial.println(" MHz");
 }
 
-void loop() {
+void loop()
+{
+    // needs a delay to have time to recieve packets
+    delay(25);
+
+    // If there is a packet available, read it and send it over serial
+    if (rf69.available())
+    {
+        digitalWrite(LED, HIGH);
+    
+        // Should be a message for us now
+        uint8_t buf[sizeof(Packet)];
+        uint8_t len = sizeof(buf);
+        if (rf69.recv(buf, &len))
+        {
+            if (!len)
+                return;
+    
+            // Allocate buffer: 4 bytes for magic + message length
+            const uint32_t magic = PACKET_START_MAGIC;
+            uint8_t packet[4 + sizeof(Packet)];  // adjust size as needed
+            memcpy(packet, &magic, 4);                    // prepend magic (little endian)
+            memcpy(packet + 4, buf, len);                 // copy received data
+    
+            Serial.write(packet, 4 + len);                // send over serial
+        }
+        else
+        {
+            Serial.println("Receive failed");
+        }
+    }
+    else {
+        digitalWrite(LED, LOW);
+    }
+
+    // If there is a packet available from serial, send it over the radio
+
     if (!Serial.available()) {
+        digitalWrite(LED, LOW);
         return;
     }
-    
+    else {
+        digitalWrite(LED, HIGH);
+    }
+
     // Shift bytes in until the beginning is a valid 0xDEADBEEF magic
     packet_rx.pushOverwrite(Serial.read());
     if (!check_magic(packet_rx)) {
@@ -57,54 +129,21 @@ void loop() {
     // We got a valid packet! (hopefully)
     Packet packet;
     for (usize i = 0; i < sizeof(Packet); i++) {
-        packet_rx.pop(((u8*)&packet)[i]);
+        // packet_rx.pop(((u8 *)&packet)[i]);
+        u8 *packet_ptr = (u8 *)&packet;
+        packet_rx.pop( packet_ptr[i]);
+        // Serial.write(packet_ptr[i]);
     }
+    // Serial.println("");
 
     // Sanity check
     if (packet.id != PACKET_START_MAGIC) {
-        Serial.println("FUCKKKKKK");
+        // Serial.println("FUCKKKKKK");
         return;
     }
 
-    // Send it across the network
-    send_packet(&packet);
-}
-
-void on_recv_packet(const u8* mac, const u8* data, i32 len) {
-    if (len != sizeof(Packet)) {
-        Serial.println("Received the wrong payload size!");
-        return;
-    }
-
-    Packet packet;
-    memcpy(&packet, data, sizeof(Packet));
-
-    for (usize i = 0; i < seen.size(); i++) {
-        if (seen[i] == packet.id) {
-            // Packet has already been through this node, so skip it
-            return;
-        }
-    }
-
-    // Send packet on serial
-    u32 packet_id = packet.id;
-    packet.id = PACKET_START_MAGIC;
-
-    Serial.write((u8*)&packet, sizeof(packet));
-
-    packet.id = packet_id;
-
-    // Echo packet
-    send_packet(&packet, false);
-}
-
-void send_packet(Packet* packet, bool overwrite_id) {
-    if (overwrite_id) {
-        packet->id = random();
-    }
-    seen.pushOverwrite(packet->id);
-
-    u8 addr[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    
-    esp_now_send(addr, (u8*) packet, sizeof(Packet));
+ 
+    // Send it over the radio
+    rf69.send((uint8_t*) &packet, sizeof(packet));
+    rf69.waitPacketSent();
 }
