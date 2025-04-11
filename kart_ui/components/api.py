@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from game_logic.item import Item
 
 
 MapData = List[Tuple[int, float, float]]
@@ -14,13 +15,13 @@ class KartUi:
     def update_map(self, map_data: MapData):
         self.mini_map.update(map_data)
         
-    def on_incoming_item(self, item: str):
+    def on_incoming_item(self, item: Item):
         """
         Called the frame that someone has hit this kart with an item
         """
         self.warning.item_hit(item)
     
-    def on_picked_up_item(self, item: str):
+    def on_picked_up_item(self, item: Item):
         """
         Called the frame that this kart has picked up an item
         """
