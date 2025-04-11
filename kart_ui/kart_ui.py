@@ -1,16 +1,17 @@
 from typing import List, Tuple
 from game_logic.item import Item
-from p5 import *
 from kart_ui.components.shuffler import Shuffler
 from kart_ui.components.debugger import Debugger
 from kart_ui.components.map_ui import MapUI
 from kart_ui.components.warning import Warning
+from p5 import *
 
 
 MapData = List[Tuple[int, float, float]]
 
 class KartUi:
     def __init__(self, debug=False):
+        size(1024, 600) #touchscreen size
         self.debugger = Debugger(on=True)
         self.shuffler = Shuffler(self.debugger)
         self.mini_map = MapUI(self.debugger)
@@ -44,7 +45,7 @@ class KartUi:
         """
         When shuffling through items, returns `True` if the animation is done
         """
-        raise NotImplementedError()
+        return self.shuffler.can_use_item()
     
     def draw(self):
         background(255)
@@ -55,3 +56,4 @@ class KartUi:
     
     def on_mouse_pressed(self, mouse_x, mouse_y):
         self.debugger.mouse_pressed(mouse_x, mouse_y)
+        

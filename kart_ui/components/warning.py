@@ -1,5 +1,5 @@
 from enum import Enum
-from kart_ui.items import ITEMS
+from game_logic.item import Item
 from p5 import *
 from p5.core.image import PImage
 from time import time
@@ -23,12 +23,12 @@ class Warning:
         self.flash_start = 0 
         self.image = None
 
-    def show(self, item: str):
+    def show(self, item: Item):
         print("show warning")
         self.warning_start = time()
-        self.show_warning_duration = ITEMS[item][1]
+        self.show_warning_duration = item.duration
         self.flash_start = time()
-        self.image = loadImage(f"kart_ui/images/items/{item}.png")
+        self.image = loadImage(f"kart_ui/images/items/{item.file_name}.png")
         self.state = WarningState.IMAGE_ON
     
     def draw(self):

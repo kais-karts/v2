@@ -12,7 +12,7 @@ from kart_ui.components.shuffler import Shuffler
 from kart_ui.components.debugger import Debugger
 from kart_ui.components.map_ui import MapUI
 from kart_ui.components.warning import Warning
-from kart_ui.components.api import API
+from kart_ui.kart_ui import API
 
 # Intellisense can't find these on its own for some reason
 global mouse_is_pressed, mouse_x, mouse_y, key_is_pressed, key

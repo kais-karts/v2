@@ -1,6 +1,5 @@
 from typing import Tuple
 from kart_ui.kart_ui import API
-
 class Map:
     """
     Represents the race track and all location-based logic.

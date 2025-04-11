@@ -1,5 +1,7 @@
 **/__pycache__/**/*
 **/*.pyc
-
+__pycache__/
 .DS_Store
 .venv/
+**/__pycache__/
+kart_ui/components/__pycache__/

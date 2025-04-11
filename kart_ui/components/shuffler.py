@@ -1,5 +1,5 @@
 from enum import Enum
-from kart_ui.items import ITEMS
+from game_logic.item import Item, Target
 from p5 import *
 from p5.core.image import PImage
 from time import time
@@ -14,21 +14,22 @@ SHUFFLE_PERIOD = .1 #how long each item is displayed during shuffling in seconds
 SHUFFLE_DURATION = 2 #how long the shuffling lasts in seconds
 IMAGE_SIZE = 1024 - 200
 
-SHUFFLED_ITEMS = [item.name for item in ITEMS]
+SHUFFLED_ITEMS = [item for item in Item]
 class Shuffler:
     def __init__(self, debugger):
         self.debugger = debugger
         # Load all item images
-        self.images = {item: loadImage(f"kart_ui/images/items/{item.name}.png") for item in ITEMS}
-        self.images['no-item'] = loadImage("kart_ui/images/items/no-item.png")
+        self.images = {item: loadImage(f"kart_ui/images/items/{item.file_name}.png") for item in Item}
+        self.no_item_image = loadImage("kart_ui/images/items/no-item.png")
 
         self.state = ShuffleState.NO_ITEM
-        self.available_item = 'no-item'
-        self.displayed_item = 'no-item'
+        self.available_item = None
+        self.displayed_item = None
         # Shuffle
         self.shuffle_start = 0
         self.last_switch = 0
         self.shuffle_index = 0
+        
         
         # Countdown
         self.countdown_start = 0
@@ -38,7 +39,7 @@ class Shuffler:
     def draw(self):
         if self.state == ShuffleState.NO_ITEM:
             # print("no item")
-            self.place_item(self.images['no-item'])
+            self.place_item(self.no_item_image)
         elif self.state == ShuffleState.SHUFFLING:
             if time() - self.last_switch > SHUFFLE_PERIOD:
                 self.displayed_item = SHUFFLED_ITEMS[self.shuffle_index]
@@ -73,12 +74,10 @@ class Shuffler:
             
     
     
-    def shuffle(self, item: str):
-        if item not in ITEMS:
-            raise ValueError(f"Invalid item: {item}")
-        
+    def shuffle(self, item: Item):
         self.shuffle_start = time()
-        self.available_item = item       
+        self.available_item = item 
+        self.displayed_item = SHUFFLED_ITEMS[self.shuffle_index]      
         self.state = ShuffleState.SHUFFLING
     
     def place_item(self, img):
@@ -104,13 +103,15 @@ class Shuffler:
     def use_item(self):
         print("use item")
         if self.state == ShuffleState.WAITING:
-            if ITEMS[self.available_item][2]: # buff item
+            if self.available_item.target == Target.SELF: # buff item
                 self.countdown_start = time()
-                self.countdown_duration = ITEMS[self.available_item][1]
+                self.countdown_duration = self.available_item.duration
                 self.state = ShuffleState.COUNTDOWN 
             else: # debuff item
                 self.state = ShuffleState.NO_ITEM
-    
+
+    def can_use_item(self):
+        return self.state == ShuffleState.WAITING
         
         
         

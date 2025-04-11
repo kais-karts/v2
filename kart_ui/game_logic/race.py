@@ -6,7 +6,7 @@ from constants import KART_ID
 from kart_ui.game_logic.map import Map
 from kart_ui.game_logic.go_kart import GoKart
 
-from kart_ui.components.api import API
+from kart_ui.kart_ui import API
 
 class Race():
     """
