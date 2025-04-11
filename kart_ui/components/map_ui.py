@@ -1,5 +1,5 @@
 from p5 import *
-from kart_ui.characters import CHARACTERS
+from .characters import CHARACTERS
 from kart_ui.mystery_boxes import MYSTERY_BOXES
 
 MAP_WIDTH = 1024
