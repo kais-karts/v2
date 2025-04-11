@@ -73,4 +73,5 @@ class Warning:
         image(img, img_x-img_width/2, img_y-img_height/2)
         self.debugger.show_image_outline(img_x, img_y, img_width, img_height)
         pop_matrix()
+    
             

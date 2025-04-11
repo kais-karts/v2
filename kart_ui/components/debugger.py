@@ -6,11 +6,12 @@ global width, height
 SHUFFLED_ITEMS = [item for item in Item]
 TEST_KART_POSITIONS = [(),]
 class Debugger:
-    def __init__(self, on=False):
+    def __init__(self, kart_ui, on=False):
         self.on = on
         self.shuffler = None
         self.map = None
         self.warning = None
+        self.kart_ui = kart_ui
         
         
     def draw(self):
@@ -39,14 +40,20 @@ class Debugger:
             self.show_luigi_at(mouse_x, mouse_y)    
         if self.shuffler is not None:
             if 0 < mouse_x < width/2 and 0 < mouse_y < 200:
-                self.shuffler.shuffle(Item.BULLET_BILL)
+                self.kart_ui.on_picked_up_item(Item.BULLET_BILL)
+                # self.shuffler.shuffle(Item.BULLET_BILL)
             elif 0 < mouse_x < width/2 and height - 200 < mouse_y < height:
-                self.warning.show(Item.BANANA)
+                self.kart_ui.on_incoming_item(Item.BANANA)
+                # self.warning.show(Item.BANANA)
             elif width/2 < mouse_x < width and 0 < mouse_y < 200:
-                self.shuffler.use_item()
+                print("can use item", self.kart_ui.can_use_item())
+                if self.kart_ui.can_use_item():
+                    self.kart_ui.on_use_item()
+                # self.shuffler.use_item()
             elif width/2 < mouse_x < 3*width/4 and height - 200 < mouse_y < height:
                 item = SHUFFLED_ITEMS[int(random_uniform(0, len(SHUFFLED_ITEMS)))]
-                self.shuffler.shuffle(item)
+                self.kart_ui.on_picked_up_item(item)
+                # self.shuffler.shuffle(item)
     
     def show_image_outline(self, x, y, width, height, loc='center'):
         if self.on:

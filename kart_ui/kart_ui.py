@@ -12,7 +12,7 @@ MapData = List[Tuple[int, float, float]]
 class KartUi:
     def __init__(self, debugMode=False):
         size(1024, 600) #touchscreen size
-        self.debugger = Debugger(on=debugMode)
+        self.debugger = Debugger(kart_ui=self,on=debugMode)
         self.shuffler = Shuffler(self.debugger)
         self.mini_map = MapUI(self.debugger)
         self.warning = Warning(self.debugger)  
@@ -27,7 +27,8 @@ class KartUi:
         """
         Called the frame that someone has hit this kart with an item
         """
-        self.warning.item_hit(item)
+        self.shuffler.drop_item()
+        self.warning.show(item)
     
     def on_picked_up_item(self, item: Item):
         """

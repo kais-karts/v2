@@ -11,7 +11,6 @@ def draw():
     # print(mouse_x, mouse_y)
 
 def mouse_pressed():
-    print(mouse_x, mouse_y)
     kart_ui.on_mouse_pressed(mouse_x, mouse_y)
     
 def start():

@@ -101,7 +101,7 @@ class Shuffler:
         pop_matrix()
     
     def use_item(self):
-        print("use item")
+        # print("use item")
         if self.state == ShuffleState.WAITING:
             if self.available_item.target == Target.SELF: # buff item
                 self.countdown_start = time()
@@ -112,6 +112,9 @@ class Shuffler:
 
     def can_use_item(self):
         return self.state == ShuffleState.WAITING
+
+    def drop_item(self):
+        self.state = ShuffleState.NO_ITEM
         
         
         
