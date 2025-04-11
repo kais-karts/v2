@@ -10,9 +10,9 @@ from p5 import *
 MapData = List[Tuple[int, float, float]]
 
 class KartUi:
-    def __init__(self, debug=False):
+    def __init__(self, debugMode=False):
         size(1024, 600) #touchscreen size
-        self.debugger = Debugger(on=True)
+        self.debugger = Debugger(on=debugMode)
         self.shuffler = Shuffler(self.debugger)
         self.mini_map = MapUI(self.debugger)
         self.warning = Warning(self.debugger)  

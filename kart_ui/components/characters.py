@@ -1,5 +1,5 @@
 CHARACTERS = {
-    0: "donkey-king",
+    0: "bowser",
     1: "luigi",
     2: "mario",
     3: "toad",

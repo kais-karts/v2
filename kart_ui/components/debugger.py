@@ -1,9 +1,9 @@
 from p5 import *
-from kart_ui.items import ITEMS
+from game_logic.item import Item
 
 global width, height
 
-SHUFFLED_ITEMS = [item.name for item in ITEMS]
+SHUFFLED_ITEMS = [item for item in Item]
 TEST_KART_POSITIONS = [(),]
 class Debugger:
     def __init__(self, on=False):
@@ -39,9 +39,9 @@ class Debugger:
             self.show_luigi_at(mouse_x, mouse_y)    
         if self.shuffler is not None:
             if 0 < mouse_x < width/2 and 0 < mouse_y < 200:
-                self.shuffler.shuffle('bulletBill')
+                self.shuffler.shuffle(Item.BULLET_BILL)
             elif 0 < mouse_x < width/2 and height - 200 < mouse_y < height:
-                self.warning.show('banana')
+                self.warning.show(Item.BANANA)
             elif width/2 < mouse_x < width and 0 < mouse_y < 200:
                 self.shuffler.use_item()
             elif width/2 < mouse_x < 3*width/4 and height - 200 < mouse_y < height:
