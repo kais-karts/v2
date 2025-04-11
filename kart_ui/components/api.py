@@ -1,11 +1,12 @@
-from dataclasses import dataclass
 from typing import List, Tuple
 
 
 MapData = List[Tuple[int, float, float]]
 
-class API:
-    def __init__(self, shuffler, mini_map, warning):
+class KartUi:
+    def __init__(self, debug=False):
+        raise NotImplementedError()
+    
         self.shuffler = shuffler
         self.mini_map = mini_map
         self.warning = warning
@@ -13,11 +14,27 @@ class API:
     def update_map(self, map_data: MapData):
         self.mini_map.update(map_data)
         
-    def item_hit(self, item: str):
+    def on_incoming_item(self, item: str):
+        """
+        Called the frame that someone has hit this kart with an item
+        """
         self.warning.item_hit(item)
     
-    def item_get(self, item: str):
+    def on_picked_up_item(self, item: str):
+        """
+        Called the frame that this kart has picked up an item
+        """
         self.shuffler.shuffle(item)
-    def item_use(self):
+        
+    def on_use_item(self):
+        """
+        Called the frame that this kart is using an item
+        """
         self.shuffler.use_item()
+
+    def can_use_item(self) -> bool:
+        """
+        When shuffling through items, returns `True` if the animation is done
+        """
+        raise NotImplementedError()
     
