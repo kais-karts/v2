@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-
+import logging
 
 # CONSTANTS
 
@@ -9,10 +9,11 @@ INC_PIN = 27
 UD_PIN  = 22
 
 # other
-MINSLEEP = .001
-NUMTAPS = 32
+MINSLEEP = .01
+NUMTAPS = 100
 INITIALIZED = False
 CURRENT_TAP = 0
+ROOTLOGGER = None
 
 def set_speed_multiplier(val: float, reset: bool = False) -> float:
     """
@@ -47,6 +48,7 @@ def reset_speed_control():
     """
     for i in range(NUMTAPS - 1):
         decrement()
+    ROOTLOGGER.info("reset speedcontrol IC")
     
 
 def init_speed_control():
@@ -63,6 +65,7 @@ def init_speed_control():
     GPIO.output(INC_PIN, GPIO.HIGH)
     GPIO.output(UD_PIN, GPIO.LOW) # default decrement ig
     INITIALIZED = True
+    ROOTLOGGER.info("initialized speedcontrol IC")
 
 # util functions
 def increment():
@@ -95,6 +98,9 @@ def edgeTrigger():
     time.sleep(MINSLEEP)
 
 # this is ran upon import to force the initialization of the IC and start at a known state (multiplier is 0)
+logging.basicConfig()
+ROOTLOGGER = logging.getLogger()
+ROOTLOGGER.setLevel(logging.INFO) # set to a higher priority to disable logs
 init_speed_control()
 reset_speed_control()
 
@@ -105,11 +111,11 @@ if __name__ == "__main__":
     val = 0
     while True:
         # test to measure IC voltage after attempted speed multiplier
-        # val = (val + .1) % 1
-        # print(f"attempted to set speed multiplier to {val} got {set_speed_multiplier(val)} instead {CURRENT_TAP}")
-        # time.sleep(2)
+        val = (val + .1) % 1
+        print(f"attempted to set speed multiplier to {val} got {set_speed_multiplier(val)} instead {CURRENT_TAP}")
+        time.sleep(2)
 
         # test to see how many taps there actually are (we already got scammed once)
-        increment()
-        print(f"{CURRENT_TAP}")
-        time.sleep(1)        
+        # increment()
+        # print(f"{CURRENT_TAP}")
+        # time.sleep(1)        
