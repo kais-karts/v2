@@ -1,10 +1,11 @@
 #pragma once
 
 #include <stdint.h>
+#include <util.h>
 
-const uint32_t PACKET_START_MAGIC = 0xDEADBEEF;
+const uint32_t PACKET_START_MAGIC = 0xEFBEADDE; // 0xDEADBEEF
 
-enum PacketTag : uint32_t {
+enum PacketTag : uint8_t {
     PacketTag_Ping     = 0,
     PacketTag_Location = 1,
     PacketTag_Attack   = 2,
@@ -12,23 +13,23 @@ enum PacketTag : uint32_t {
 
 typedef struct __attribute__((packed)) {
     uint32_t id;     // Packet ID or magic. If 0xDEADBEEF, it marks start of packet on serial.
-    uint32_t tag;    // PacketTag
+    uint8_t tag;    // PacketTag
 
     union {
         struct {
-            uint32_t from;
+            uint8_t from;
             uint32_t data;
         } ping;
 
         struct {
-            uint32_t kart_id;
-            int32_t x;
-            int32_t y;
+            uint8_t kart_id;
+            f32 x;
+            f32 y;
         } location;
 
         struct {
-            uint32_t kart_id;
-            uint32_t item_id;
+            uint8_t kart_id;
+            uint8_t item_id;
         } attack;
     } body;
 

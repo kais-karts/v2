@@ -12,13 +12,16 @@ MAX_PACKET_SIZE = 14 # byte size of largest packet
 
 # Common fields
 Header = Struct(
-    "magic" / Const(0xDEADBEEF, Int32ul),
+    "magic" / Const(0xEFBEADDE, Int32ul),
     "tag" / Int8ul
 )
 
 # Packet body schemas
 PacketBodies = {
-    PING: Struct(),
+    PING: Struct(
+        "from" / Int8ul,
+        "data" / Int32ul,
+    ),
     LOCATION: Struct(
         "kart_id" / Int8ul,
         "x" / Float32l,
@@ -86,10 +89,11 @@ class PacketQueue:
         if self.serial.in_waiting > 0:
             self.queue += self.serial.read_all()
             print("received packet bytes:", self.queue.hex())
-            start_idx = self.queue.find(Packet.MAGIC)
+            start_idx = self.queue.find(0xDEADBEEF.to_bytes(4))
 
             # did not find the magic, return None
             if start_idx == -1:
+                print("magic not found")
                 return None
             # check if there's enough of a packet to return
             if len(self.queue) < start_idx + Packet.SIZE: 
@@ -111,7 +115,9 @@ class PacketQueue:
         Args:
             packet (Packet): The packet to send
         """
+        # print in little endian format
         print("sending packet bytes:", packet.hex())
+        
         return self.serial.write(packet)
 
     def __iter__(self):
@@ -125,10 +131,12 @@ class PacketQueue:
         return packet
 
 if __name__ == "__main__":
-    pq = PacketQueue("COM26")
+    pq = PacketQueue("/dev/ttyACM0")
     while True:
         packet = pq.recv()
-        print(packet) # TODO: print the packet in a human-readable format
-        send_packet = Packet(LOCATION, kart_id=3, x=1.0, y=2.0)
+        if packet is not None:
+            # print(packet.hex())
+            print(Packet.from_bytes(packet))
+        send_packet = Packet(LOCATION, kart_id=3, x=1.5, y=2.176)
         pq.send(send_packet.to_bytes())
         time.sleep(1) # TODO: remove this, it's just for testing purposes

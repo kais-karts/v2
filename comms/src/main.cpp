@@ -26,6 +26,9 @@ RH_RF69 rf69(RFM69_CS, RFM69_INT);
 // notion of framing, e.g. when a packet ends/begin.
 RingBuf<u8, sizeof(Packet)> packet_rx;
 
+// Buffer of recently recieved packet Ids. Used to detect duplicates.
+RingBuf<u32, 64> packet_ids;
+
 // Class to manage message delivery and receipt, using the driver declared above
 // RHReliableDatagram rf69_manager(rf69, MY_ADDRESS);
 
@@ -92,14 +95,18 @@ void loop()
         {
             if (!len)
                 return;
-    
-            // Allocate buffer: 4 bytes for magic + message length
-            const uint32_t magic = PACKET_START_MAGIC;
-            uint8_t packet[4 + sizeof(Packet)];  // adjust size as needed
-            memcpy(packet, &magic, 4);                    // prepend magic (little endian)
-            memcpy(packet + 4, buf, len);                 // copy received data
-    
-            Serial.write(packet, 4 + len);                // send over serial
+            
+            // Check for duplicates
+            Packet *packet = (Packet *)buf;
+            // if (packet_ids.pushOverwrite(packet->id)) {
+            //     Serial.println("Duplicate packet received!");
+            //     return;
+            // }
+            
+            // Otherwise, overwrite first 4 bytes with magic number
+            ((Packet *)buf)->id = PACKET_START_MAGIC;
+            // Send over serial
+            Serial.write(buf, len);
         }
         else
         {
@@ -142,8 +149,11 @@ void loop()
         return;
     }
 
+    // Now that it's validated use id space for ID
+    packet.id = random(0, pow(2,32) - 1);
  
     // Send it over the radio
+    // TODO alter to not send the magic over the radio (first 4 bytes)
     rf69.send((uint8_t*) &packet, sizeof(packet));
     rf69.waitPacketSent();
 }
